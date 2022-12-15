@@ -6,6 +6,7 @@ const objId = require("../middleware/validateObjectId");
 const auth = require("../middleware/auth");
 const { User } = require("../models/user");
 const { Post } = require("../models/post");
+const { Notification } = require("../models/notification");
 
 
 //get post comments
@@ -34,10 +35,17 @@ router.post('/', [auth, validator(validate)], async (req, res) => {
         },
         postId: post._id,
         text: req.body.text
+    });
+
+    const notification = new Notification({
+        recipientId: post.userId,
+        postId: post._id,
+        senderId: user._id,
+        text: user.username + " commented your post",
     })
 
     await comment.save()
-
+    if (post.userId !== req.body.userId) await notification.save();
     res.send(comment)
 
 })

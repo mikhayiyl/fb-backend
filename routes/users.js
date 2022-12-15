@@ -6,6 +6,7 @@ const validator = require("../middleware/validate");
 const admin = require("../middleware/admin");
 const objId = require("../middleware/validateObjectId");
 const auth = require("../middleware/auth");
+const { Notification } = require("../models/notification");
 
 
 //get all users
@@ -139,10 +140,17 @@ router.put("/friend/:id", [auth, objId], async (req, res) => {
   if (currentUser.friends.includes(req.body.userId))
     return res.status(403).send("Access denied! Already friends with this user");
 
+  const notification = new Notification({
+    recipientId: friend._id,
+    senderId: currentUser._id,
+    text: "you are now friends with " + currentUser.username,
+  })
+
   await currentUser.updateOne({ $push: { friends: req.body.userId } });
   await friend.updateOne({ $push: { friends: req.params.id } });
   await currentUser.updateOne({ $pull: { friendRequests: req.body.userId } });
-  res.send("You are now freinds with this user");
+  await notification.save();
+  res.send("You are now friends with this user");
 });
 
 //unfriend users

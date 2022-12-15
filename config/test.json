@@ -1,0 +1,5 @@
+{
+  "db": "mongodb://localhost/facebook-api-test",
+  "jwtPrivateKey": "123456",
+  "port": "5000"
+}

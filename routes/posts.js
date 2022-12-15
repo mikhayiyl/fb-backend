@@ -9,6 +9,7 @@ const { Comment } = require("../models/comment");
 const { sharedPost } = require("../models/sharedPost");
 const { savePost } = require("../models/savedPost");
 const winston = require("winston");
+const { Notification } = require("../models/notification");
 
 // get a post
 router.get('/:id', [auth, objId], async (req, res) => {
@@ -69,16 +70,9 @@ router.delete('/:id', [auth, objId], async (req, res) => {
   //delete if the post  is saved
   await savePost.deleteOne({ postId: post._id });
 
-  //removing media from project workspace
-  const path = `routes/public/${post.media.filename}`;
+  //removing media from firebase
 
-  fs.unlink(path, (err) => {
-    if (err) {
-      winston.info("Couldn't unlink", err)
-    } else {
-      winston.info("file deleted", path)
-    }
-  })
+
 
   res.send({ post, comments });
 });
@@ -91,9 +85,25 @@ router.put("/likes/:id", [auth, validator(validate), objId], async (req, res) =>
   let post = await Post.findById(req.params.id);
   if (!post) return res.status(404).send('Post already deleted');
 
+
+  const user = await User.findById(req.body.userId);
+  if (!user) return res.status(404).send("Invalid user")
+
+  const notification = new Notification({
+    recipientId: post.userId,
+    senderId: user._id,
+    text: user.username + " liked your post ",
+  })
+
+
+
+
+
   if (!post.likes.includes(req.body.userId))
     await post.updateOne({ $push: { likes: req.body.userId } })
 
+
+  if (post.userId !== req.body.userId) await notification.save();
 
   res.send(post);
 
@@ -111,6 +121,8 @@ router.put("/unlikes/:id", [auth, validator(validate), objId], async (req, res) 
 
   if (post.likes.includes(req.body.userId))
     await post.updateOne({ $pull: { likes: req.body.userId } })
+
+  await Notification.findOneAndDelete({ senderId: req.body.userId, recipientId: post.userId })
 
 
   res.send(post);

@@ -1,0 +1,4 @@
+{
+  "db": "FB_DB",
+  "jwtPrivateKey": "SECURITY_KEY"
+}
