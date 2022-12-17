@@ -1,36 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
 const { Post } = require('../models/post');
 const { User } = require('../models/user');
 
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "routes/public")
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + file.originalname)
-    }
-});
 
 
 
-const upload = multer({ storage });
 
-
-
-router.post("/", upload.single("file"), async (req, res, next) => {
-
+router.post("/", async (req, res, next) => {
     const post = new Post({
-        userId: req.body.id,
-        description: req.body.desc,
+        userId: req.body.userId,
+        description: req.body.description,
 
         media: {
-            name: req.file.originalname.endsWith(".mp4") ? "video" : "image",
-            filename: req.file.filename,
+            name: req.body.name.endsWith(".mp4") ? "video" : "image",
+            file: req.body.file
         }
     })
 
@@ -41,12 +26,12 @@ router.post("/", upload.single("file"), async (req, res, next) => {
 
 });
 
-router.put("/", upload.single("file"), async (req, res) => {
+router.put("/", async (req, res) => {
 
-    const user = req.body.name === "profile" ? await User.findByIdAndUpdate(req.body.id, {
-        profilePicture: req.file.filename, $push: { images: { image: req.file.filename, type: "profile" } }
+    const user = req.body.name === "profile" ? await User.findByIdAndUpdate(req.body.userId, {
+        profilePicture: req.body.file, $push: { images: { image: req.body.file, type: "profile" } }
     }, { new: true }) : await User.findByIdAndUpdate(req.body.id, {
-        coverPicture: req.file.filename, $push: { images: { image: req.file.filename, type: "cover" } }
+        coverPicture: req.body.file, $push: { images: { image: req.body.file, type: "cover" } }
     }, { new: true });
 
     res.send(user)

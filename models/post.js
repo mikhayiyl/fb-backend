@@ -13,7 +13,7 @@ const postSchema = new mongoose.Schema(
     },
     media: {
       name: String,
-      filename: String,
+      file: String,
     },
     likes: {
       type: Array,

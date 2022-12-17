@@ -31,28 +31,11 @@ router.get('/', [auth], async (req, res) => {
 
 router.post("/", [auth, validator(validate)], async (req, res) => {
 
-  if (!req.body.description && !req.body.media) return res.status(400).send('Add media or texts');
-  const post = new Post({
-    userId: req.body.userId,
-    description: req.body.description,
-    media: {
-      name: "",
-      filename: "",
-    }
-  });
+  if (!req.body.description) return res.status(400).send('No description text');
+  const post = new Post(req.body
+  );
   await post.save();
   res.send(post);
-});
-
-//update a post 
-
-router.put("/:id", [auth, validator(validate), objId], async (req, res) => {
-  let post = await Post.findById(req.params.id);
-  if (!post) return res.status(404).send('Post already deleted');
-
-  if (!post.userId === req.body.userId) return res.status(401).send('Access denied. You can only update your post');
-  post = await post.updateOne({ $set: req.body })
-  res.send(post).json('The post was updated');
 });
 
 
@@ -69,10 +52,6 @@ router.delete('/:id', [auth, objId], async (req, res) => {
   await sharedPost.deleteOne({ postId: post._id });
   //delete if the post  is saved
   await savePost.deleteOne({ postId: post._id });
-
-  //removing media from firebase
-
-
 
   res.send({ post, comments });
 });
