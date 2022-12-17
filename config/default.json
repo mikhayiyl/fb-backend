@@ -1,5 +1,7 @@
 {
   "db": "mongodb://localhost/facebook-api",
   "jwtPrivateKey": "",
+  "profilepic": "https://firebasestorage.googleapis.com/v0/b/fb-clone-45205.appspot.com/o/user.png?alt=media&token=30b76d48-fd3f-4ff2-8a0e-6dc05f7c533c",
+  "coverpic": "https://firebasestorage.googleapis.com/v0/b/fb-clone-45205.appspot.com/o/beach.jpg?alt=media&token=731e6ca6-d27b-4c29-b2de-8e1daefbe541",
   "port": "3900"
 }

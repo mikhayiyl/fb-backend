@@ -26,11 +26,11 @@ const userSchema = new mongoose.Schema(
     },
     profilePicture: {
       type: String,
-      default: "user.png",
+      default: config.get("profilepic"),
     },
     coverPicture: {
       type: String,
-      default: "",
+      default: config.get("coverpic"),
     },
     friends: {
       type: Array,
