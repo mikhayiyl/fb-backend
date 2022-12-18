@@ -30,10 +30,11 @@ router.put("/", async (req, res) => {
 
     const user = req.body.name === "profile" ? await User.findByIdAndUpdate(req.body.userId, {
         profilePicture: req.body.file, $push: { images: { image: req.body.file, type: "profile" } }
-    }, { new: true }) : await User.findByIdAndUpdate(req.body.id, {
+    }, { new: true }) : await User.findByIdAndUpdate(req.body.userId, {
         coverPicture: req.body.file, $push: { images: { image: req.body.file, type: "cover" } }
     }, { new: true });
 
+    console.log(user)
     res.send(user)
 
 });
