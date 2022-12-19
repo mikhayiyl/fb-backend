@@ -7,6 +7,7 @@ const auth = require("../middleware/auth");
 
 
 
+
 //get notification 
 
 router.get("/:id", [auth], async (req, res) => {

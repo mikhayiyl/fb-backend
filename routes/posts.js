@@ -66,10 +66,14 @@ router.put("/likes/:id", [auth, validator(validate), objId], async (req, res) =>
 
 
   const user = await User.findById(req.body.userId);
-  if (!user) return res.status(404).send("Invalid user")
+  if (!user) return res.status(404).send("Invalid user");
+
+
+
 
   const notification = new Notification({
     recipientId: post.userId,
+    postId: post._id,
     senderId: user._id,
     text: user.username + " liked your post ",
   })
@@ -89,8 +93,6 @@ router.put("/likes/:id", [auth, validator(validate), objId], async (req, res) =>
 });
 
 
-
-
 //unlike a post
 
 
@@ -101,7 +103,7 @@ router.put("/unlikes/:id", [auth, validator(validate), objId], async (req, res) 
   if (post.likes.includes(req.body.userId))
     await post.updateOne({ $pull: { likes: req.body.userId } })
 
-  await Notification.findOneAndDelete({ senderId: req.body.userId, recipientId: post.userId })
+  await Notification.findOneAndDelete({ senderId: req.body.userId, recipientId: post.userId, postId: post._id })
 
 
   res.send(post);
